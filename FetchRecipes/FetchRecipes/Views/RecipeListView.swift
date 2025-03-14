@@ -23,17 +23,13 @@ struct RecipeListView: View {
                                 EmptyListView()
                                     .frame(width: geo.size.width, height: geo.size.height)
                             }
-                            .refreshable {
-                                fetchRecipes()
-                            }
+                            .refreshable { fetchRecipes() }
                         }
                     } else {
                         List(recipes) { recipe in
                             RecipeRow(recipe: recipe)
                         }
-                        .refreshable {
-                            fetchRecipes()
-                        }
+                        .refreshable { fetchRecipes() }
                     }
                 }
                 .navigationTitle("Recipes")
@@ -45,9 +41,7 @@ struct RecipeListView: View {
                         }, message: {
                             Text(errorMessage)
                         })
-                .onAppear {
-                    fetchRecipes()
-                }
+                .onAppear { fetchRecipes() }
                 
                 LoaderView(isLoading: $isLoading)
             }
