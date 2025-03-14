@@ -10,6 +10,8 @@ import SwiftUI
 struct RecipeListView: View {
     @State var recipes: [Recipe] = []
     @State var isLoading: Bool = false
+    @State var showAlert: Bool = false
+    @State var errorMessage: String = ""
     
     var body: some View {
         NavigationStack {
@@ -36,6 +38,13 @@ struct RecipeListView: View {
                 }
                 .navigationTitle("Recipes")
                 .navigationBarTitleDisplayMode(.large)
+                .alert("Error",
+                       isPresented: $showAlert,
+                       actions: {
+                            Button("OK", role: .cancel, action: {})
+                        }, message: {
+                            Text(errorMessage)
+                        })
                 .onAppear {
                     fetchRecipes()
                 }
@@ -48,9 +57,18 @@ struct RecipeListView: View {
     private func fetchRecipes() {
         isLoading = true
         Task { @MainActor in
-            recipes = try await NetworkManager.shared.fetchRecipes()
-            sortRecipes()
-            isLoading = false
+            defer { isLoading = false }
+            do {
+                recipes = try await NetworkManager.shared.fetchRecipes()
+                sortRecipes()
+                isLoading = false
+            } catch NetworkingError.invalidUrl {
+                showError("Invalid URL for fetching recipes. Please contact customer service.")
+            } catch NetworkingError.invalidStatusCode {
+                showError("Something went wrong while fetching recipes. Please try again later.")
+            } catch NetworkingError.requestFailed {
+                showError("Something went wrong while fetching recipes. Please try again later.")
+            }
         }
     }
     
@@ -58,6 +76,12 @@ struct RecipeListView: View {
         recipes.sort {
             $0.cuisine < $1.cuisine
         }
+    }
+    
+    private func showError(_ message: String) {
+        showAlert = true
+        errorMessage = message
+        recipes = []
     }
 }
 
