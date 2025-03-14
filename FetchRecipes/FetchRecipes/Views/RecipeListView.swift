@@ -55,7 +55,6 @@ struct RecipeListView: View {
             do {
                 recipes = try await NetworkManager.shared.fetchRecipes()
                 sortRecipes()
-                isLoading = false
             } catch NetworkingError.invalidUrl {
                 showError("Invalid URL for fetching recipes. Please contact customer service.")
             } catch NetworkingError.invalidStatusCode {
