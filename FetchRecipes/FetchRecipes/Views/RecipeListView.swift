@@ -21,34 +21,18 @@ struct RecipeListView: View {
                                 .frame(width: geo.size.width, height: geo.size.height)
                         }
                         .refreshable {
-                            fetchAndSortRecipes()
+                            fetchRecipes()
                         }
                     }
                 } else {
                     List(recipes) { recipe in
-                        HStack(spacing: 16) {
-                            AsyncImage(url: URL(string: recipe.photoUrlSmall ?? ""))
-                                .frame(width: 150, height: 150)
-                                .aspectRatio(contentMode: .fit)
-                                .clipped()
-                                .cornerRadius(8)
-                            
-                            VStack(spacing: 8) {
-                                Text("Cuisine: \(recipe.cuisine)")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(recipe.name)
-                                    .font(.subheadline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        .listRowSeparator(.hidden)
+                        RecipeRow(recipe: recipe)
                     }
                     .refreshable {
-                        fetchAndSortRecipes()
+                        fetchRecipes()
                     }
                     .onAppear {
-                        fetchAndSortRecipes()
+                        fetchRecipes()
                     }
                 }
             }
@@ -57,14 +41,18 @@ struct RecipeListView: View {
         }
     }
     
-    private func fetchAndSortRecipes() {
+    private func fetchRecipes() {
         isLoading = true
         Task { @MainActor in
             recipes = try await NetworkManager.shared.fetchRecipes()
-            recipes.sort {
-                $0.cuisine < $1.cuisine
-            }
+            sortRecipes()
             isLoading = false
+        }
+    }
+    
+    private func sortRecipes() {
+        recipes.sort {
+            $0.cuisine < $1.cuisine
         }
     }
 }
