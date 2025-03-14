@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Recipe: Codable, Identifiable {
+struct Recipe: Decodable, Identifiable {
     var id: String
     var name: String
     var cuisine: String
@@ -21,7 +21,7 @@ struct Recipe: Codable, Identifiable {
     }
 }
 
-struct RecipeResponse: Codable {
+struct RecipeResponse: Decodable {
     var recipes: [Recipe]
     
     enum CodingKeys: String, CodingKey {
