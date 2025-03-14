@@ -13,31 +13,35 @@ struct RecipeListView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                if recipes.isEmpty {
-                    GeometryReader { geo in
-                        ScrollView {
-                            EmptyListView()
-                                .frame(width: geo.size.width, height: geo.size.height)
+            ZStack {
+                VStack {
+                    if recipes.isEmpty && !isLoading {
+                        GeometryReader { geo in
+                            ScrollView {
+                                EmptyListView()
+                                    .frame(width: geo.size.width, height: geo.size.height)
+                            }
+                            .refreshable {
+                                fetchRecipes()
+                            }
+                        }
+                    } else {
+                        List(recipes) { recipe in
+                            RecipeRow(recipe: recipe)
                         }
                         .refreshable {
                             fetchRecipes()
                         }
                     }
-                } else {
-                    List(recipes) { recipe in
-                        RecipeRow(recipe: recipe)
-                    }
-                    .refreshable {
-                        fetchRecipes()
-                    }
-                    .onAppear {
-                        fetchRecipes()
-                    }
                 }
+                .navigationTitle("Recipes")
+                .navigationBarTitleDisplayMode(.large)
+                .onAppear {
+                    fetchRecipes()
+                }
+                
+                LoaderView(isLoading: $isLoading)
             }
-            .navigationTitle("Recipes")
-            .navigationBarTitleDisplayMode(.large)
         }
     }
     
