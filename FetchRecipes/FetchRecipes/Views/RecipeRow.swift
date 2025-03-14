@@ -20,7 +20,11 @@ struct RecipeRow: View {
                     .clipped()
                     .cornerRadius(8)
             } placeholder: {
-                ProgressView()
+                Image(systemName: "photo.artframe")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 150, height: 150)
+                    .foregroundColor(.gray)
             }
             
             VStack(spacing: 8) {
