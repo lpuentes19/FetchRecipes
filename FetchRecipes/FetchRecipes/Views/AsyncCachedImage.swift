@@ -29,10 +29,32 @@ struct AsyncCachedImage<ImageView: View, PlaceholderView: View>: View {
                 placeholder()
                     .onAppear {
                         Task {
-                            image = await NetworkManager.shared.downloadPhoto(url: url)
+                            image = await downloadPhoto(url: url)
                         }
                     }
             }
+        }
+    }
+    
+    private func downloadPhoto(url: URL?) async -> UIImage? {
+        guard let url = url else {
+            return nil
+        }
+        
+        do {
+            if let cachedResponse = URLCache.shared.cachedResponse(for: .init(url: url)) {
+                return UIImage(data: cachedResponse.data)
+            } else {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                URLCache.shared.storeCachedResponse(.init(response: response, data: data), for: .init(url: url))
+                guard let image = UIImage(data: data) else {
+                    return nil
+                }
+                
+                return image
+            }
+        } catch {
+            return nil
         }
     }
 }
