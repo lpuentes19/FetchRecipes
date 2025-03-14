@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct Recipe: Codable {
+struct Recipe: Codable, Identifiable {
     var id: String
     var name: String
     var cuisine: String
     var photoUrlSmall: String?
     
     enum CodingKeys: String, CodingKey {
-        case id
+        case id = "uuid"
         case name
         case cuisine
         case photoUrlSmall = "photo_url_small"
