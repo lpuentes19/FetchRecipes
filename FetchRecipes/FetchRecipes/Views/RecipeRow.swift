@@ -12,11 +12,16 @@ struct RecipeRow: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            AsyncImage(url: URL(string: recipe.photoUrlSmall ?? ""))
-                .frame(width: 150, height: 150)
-                .aspectRatio(contentMode: .fit)
-                .clipped()
-                .cornerRadius(8)
+            AsyncCachedImage(url: URL(string: recipe.photoUrlSmall ?? "")) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 150, height: 150)
+                    .clipped()
+                    .cornerRadius(8)
+            } placeholder: {
+                ProgressView()
+            }
             
             VStack(spacing: 8) {
                 Text("Cuisine: \(recipe.cuisine)")
