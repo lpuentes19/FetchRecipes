@@ -11,7 +11,9 @@ import SwiftUI
 struct FetchRecipesApp: App {
     var body: some Scene {
         WindowGroup {
-            RecipeListView()
+            let recipeService = RecipeService()
+            let viewModel = RecipeListViewModel(recipeService: recipeService)
+            RecipeListView(viewModel: viewModel)
         }
     }
 }
