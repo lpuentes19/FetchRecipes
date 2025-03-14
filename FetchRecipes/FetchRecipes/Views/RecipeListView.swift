@@ -50,7 +50,7 @@ struct RecipeListView: View {
     
     private func fetchRecipes() {
         isLoading = true
-        Task { @MainActor in
+        Task {
             defer { isLoading = false }
             do {
                 recipes = try await NetworkManager.shared.fetchRecipes()
