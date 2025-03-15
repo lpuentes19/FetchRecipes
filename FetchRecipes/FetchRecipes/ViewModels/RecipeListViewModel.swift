@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class RecipeListViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading: Bool = false
@@ -37,20 +38,24 @@ class RecipeListViewModel: ObservableObject {
     
     // MARK: - API
     
-    func fetchRecipes() {
+    func fetchRecipes() async throws {
+        do {
+            recipes = try await recipeService.fetchRecipes()
+            sortRecipes()
+        } catch NetworkingError.invalidUrl {
+            showError("Invalid URL for fetching recipes. Please contact customer service.")
+        } catch NetworkingError.invalidStatusCode {
+            showError("Something went wrong while fetching recipes. Please try again later.")
+        } catch NetworkingError.requestFailed {
+            showError("Failed trying to fetch recipes. Please try again later.")
+        }
+    }
+    
+    func getRecipes()  {
         isLoading = true
         Task {
-            defer { isLoading = false }
-            do {
-                recipes = try await recipeService.fetchRecipes()
-                sortRecipes()
-            } catch NetworkingError.invalidUrl {
-                showError("Invalid URL for fetching recipes. Please contact customer service.")
-            } catch NetworkingError.invalidStatusCode {
-                showError("Something went wrong while fetching recipes. Please try again later.")
-            } catch NetworkingError.requestFailed {
-                showError("Something went wrong while fetching recipes. Please try again later.")
-            }
+            try await fetchRecipes()
+            isLoading = false
         }
     }
 }
