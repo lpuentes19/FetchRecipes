@@ -20,13 +20,13 @@ struct RecipeListView: View {
                                 EmptyListView()
                                     .frame(width: geo.size.width, height: geo.size.height)
                             }
-                            .refreshable { viewModel.fetchRecipes() }
+                            .refreshable { viewModel.getRecipes() }
                         }
                     } else {
                         List(viewModel.recipes) { recipe in
                             RecipeRow(recipe: recipe)
                         }
-                        .refreshable { viewModel.fetchRecipes() }
+                        .refreshable { viewModel.getRecipes() }
                     }
                 }
                 .navigationTitle("Recipes")
@@ -38,7 +38,7 @@ struct RecipeListView: View {
                         }, message: {
                             Text(viewModel.errorMessage)
                         })
-                .onAppear { viewModel.fetchRecipes() }
+                .onAppear { viewModel.getRecipes() }
                 
                 LoaderView(isLoading: $viewModel.isLoading)
             }
